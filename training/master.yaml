@@ -21,23 +21,27 @@ dataloader:
     predict: 1
 
   dataset:
-    dataset: ${hardware.paths.data}/${hardware.files.dataset}
+    join:  
+     - dataset: ${hardware.paths.data}/${hardware.files.dataset1}
+     - dataset: ${hardware.paths.data}/${hardware.files.dataset2}
+    #dataset: ${hardware.paths.data}/${hardware.files.dataset1}
     #trimedge branch
     mask_from_dataset: 
       dataset: /lustre/storeB/project/fou/hi/foccus/datasets/mask_2024010100-2024010320.zarr
       field: land_binary_mask_0
-
+    # dropping all but surface vars --> dont need imputer
+    drop: [salinity_0,salinity_10,salinity_100,salinity_15,salinity_2,salinity_200,salinity_25,salinity_3,salinity_300,salinity_5,salinity_50,salinity_65,salinity_7,salinity_75,temperature_0,temperature_10,temperature_100,temperature_15,temperature_2,temperature_200,temperature_25,temperature_3,temperature_300,temperature_5,temperature_50,temperature_65,temperature_7,temperature_75,u_eastward_0,u_eastward_10,u_eastward_100,u_eastward_15,u_eastward_2,u_eastward_200,u_eastward_25,u_eastward_3,u_eastward_300,u_eastward_5,u_eastward_50,u_eastward_65,u_eastward_7,u_eastward_75,v_northward_0,v_northward_10,v_northward_100,v_northward_15,v_northward_2,v_northward_200,v_northward_25,v_northward_3,v_northward_300,v_northward_5,v_northward_50,v_northward_65,v_northward_7,v_northward_75,w_0,w_10,w_10,w_15,w_2,w_20,w_25,w_3,w_30,w_5,w_50,w_65,w_7,w_75]
   limit_batches: 
     training: 10
     validation: 10
   training:
     start: 2024-01-01
-    end: 2024-01-31
+    end: 2024-01-03
     dataset: ${dataloader.dataset} 
     frequency: 1
   validation:
-    start: 2024-02-01
-    end: 2024-02-28
+    start: 2024-01-04
+    end: 2024-01-06
     dataset: ${dataloader.dataset}
     frequency: 1
   test:
@@ -52,12 +56,13 @@ hardware:
   num_gpus_per_model: 1
   accelerator: auto
   paths:
-    data: /lustre/storeB/project/fou/hi/foccus/datasets/prepro_norkyst_tests/ 
+    data: /lustre/storeB/project/fou/hi/foccus/datasets/ 
     output_base: /lustre/storeB/project/fou/hi/foccus/outputs/ #does nothing?
     output: null #do not change this, it will be modified in code to be output_base + run_id.
     graph: /lustre/storeB/project/fou/hi/foccus/graphs/
   files:
-    dataset: norkyst800_his_zdepth_2024_temp_m00_AN_ml.zarr
+    dataset1: prepro_norkyst_tests/norkyst800_his_zdepth_2024_m00_AN_ml.zarr #norkyst800_his_zdepth_2024_temp_m00_AN_ml.zarr
+    dataset2: h_2024010100-2024010220.zarr
     graph: graph-3-12.pt
     warm_start: null #specific checkpoint to start from, defaults to last.ckpt
 
@@ -125,7 +130,7 @@ data:
   frequency: 1h
   timestep: 1h
   format: zarr
-  forcing: []
+  forcing: [Uwind_eastward, Vwind_northward]
 
   diagnostic: []
 
@@ -139,10 +144,10 @@ data:
     max: []
     none: []
 
-  imputer:
+  #imputer:
     #legge til flere variabler her når vi har det
-    default: "none"
-    999:
+  #  default: "none"
+  #  999:
   #    - temperature_0
   #    - temperature_1
   #    - temperature_2
@@ -150,14 +155,14 @@ data:
   #    - temperature_5
   #    - temperature_7
   #    - temperature_10
-      - temperature_15
-      - temperature_25
-      - temperature_50
-      - temperature_65
-      - temperature_75
-      - temperature_100
-      - temperature_200
-      - temperature_300
+  #    - temperature_15
+  #    - temperature_25
+  #    - temperature_50
+  #    - temperature_65
+  #    - temperature_75
+  #    - temperature_100
+  #    - temperature_200
+  #    - temperature_300
 
   remapper:
     default: "none"
